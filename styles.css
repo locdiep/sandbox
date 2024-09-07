@@ -11,13 +11,20 @@ button {
   border: none;
   outline: none;
   background-color: transparent;
-  width: 24px;
-  height: 24px;
   border-radius: 4px;
 }
 
 button:hover {
   background-color: #3d3d3d;
+}
+
+button:hover i {
+  color: white;
+}
+
+.square {
+  width: 24px;
+  height: 24px;
 }
 
 i {
@@ -82,10 +89,6 @@ input {
 
 #close-button:hover {
   background-color: #e81123;
-}
-
-#close-button:hover i {
-  color: white;
 }
 
 #close-button:not(:hover) {

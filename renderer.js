@@ -48,4 +48,14 @@ window.addEventListener('DOMContentLoaded', () => {
   ipcRenderer.on('focus', () => {
     document.getElementById('title-bar').style.backgroundColor = '#1f1f1f'
   });
+
+  document.getElementById('custom-layout-button').addEventListener('click', (event) => {
+    event.preventDefault();
+    const buttonRect = event.currentTarget.getBoundingClientRect();
+    ipcRenderer.send('show-custom-layout-menu', {x: buttonRect.left, y: buttonRect.bottom});
+  });
+
+  ipcRenderer.on('toggle-primary-side-bar', (event) => {
+    document.querySelector('#show-left-side-bar-button i').style.color = 'white';
+  });
 });
