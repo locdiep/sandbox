@@ -8,3 +8,12 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
 contextBridge.exposeInMainWorld('platform', {
   isWindows: process.platform === 'win32',
 });
+
+contextBridge.exposeInMainWorld('electronStore', {
+  get: (key) => ipcRenderer.invoke('getStoreValue', key),
+  set: (key, value) => ipcRenderer.invoke('setStoreValue', key, value),
+});
+
+contextBridge.exposeInMainWorld('electronMenu', {
+  setChecked: (id, checked) => ipcRenderer.send('set-checked', id, checked)
+});

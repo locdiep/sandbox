@@ -10,9 +10,15 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "electron": "^32.0.2"
+    "@types/electron": "^1.6.10",
+    "@types/node": "^22.5.4",
+    "electron": "^32.0.2",
+    "typescript": "^5.5.4"
   },
   "dependencies": {
+    "electron-store": "^10.0.0",
+    "fix-esm": "^1.0.1",
     "sharp": "^0.33.5"
-  }
+  },
+  "type": "module"
 }
