@@ -6,36 +6,61 @@
     <link rel="stylesheet" type="text/css" href="styles.css">
   </head>
   <body>
-    <div id="title-bar">
-      <div id="title-bar-left">
-        <i id="logo" class="fa-solid fa-gamepad fa-lg"></i>
+    <div id="window">
+      <div id="title-bar">
+        <div id="title-bar-left">
+          <i id="logo" class="fa-solid fa-gamepad fa-lg"></i>
+        </div>
+        <div id="title-bar-center">
+          <input class="input-lg" id="search-box" placeholder="Search or type command">
+        </div>
+        <div id="title-bar-right">
+          <button class="square" id="toggle-left-side-bar-button" title="Toggle Primary Side Bar"><i class="fa-solid fa-l"></i></button>
+          <button class="square" id="toggle-panel-button" title="Toggle Panel"><i class="fa-solid fa-p"></i></button>
+          <button class="square" id="toggle-right-side-bar-button" title="Toggle Secondary Side Bar"><i class="fa-solid fa-r"></i></button>
+          <button class="square" id="custom-layout-button" title="Customize Layout"><i class="fa-solid fa-ellipsis"></i></button>
+          <button class="window-button" id="minimize-button"><i class="fa-regular fa-window-minimize"></i></button>
+          <button class="window-button" id="restore-button"><i class="fa-regular fa-window-restore"></i></button>
+          <button class="window-button" id="maximize-button"><i class="fa-regular fa-square"></i></button>
+          <button class="window-button" id="close-button"><i class="fa-regular fa-x"></i></button>
+        </div>
       </div>
-      <div id="title-bar-center">
-        <input class="input-lg" id="search-box" placeholder="Search or type command">
-      </div>
-      <div id="title-bar-right">
-        <button class="square" id="toggle-left-side-bar-button" title="Toggle Primary Side Bar"><i class="fa-solid fa-l"></i></button>
-        <button class="square" id="toggle-panel-button" title="Toggle Panel"><i class="fa-solid fa-p"></i></button>
-        <button class="square" id="toggle-right-side-bar-button" title="Toggle Secondary Side Bar"><i class="fa-solid fa-r"></i></button>
-        <button class="square" id="custom-layout-button" title="Customize Layout"><i class="fa-solid fa-ellipsis"></i></button>
-        <button class="window-button" id="minimize-button"><i class="fa-regular fa-window-minimize"></i></button>
-        <button class="window-button" id="restore-button"><i class="fa-regular fa-window-restore"></i></button>
-        <button class="window-button" id="maximize-button"><i class="fa-regular fa-square"></i></button>
-        <button class="window-button" id="close-button"><i class="fa-regular fa-x"></i></button>
-      </div>
-    </div>
-    <div id="status-bar" class="blue-bg white-fg">
-      <div class="left-div">
-        <button id="err-warn-button"><i class="fa-solid fa-circle-xmark"></i> 0 <i class="fa-solid fa-circle-exclamation"></i> 0</button>
-        <button id="run-button"><i class="fa-solid fa-play"></i></button>
-      </div>
-      <div class="left-div">
-        <button id="ln-col-count-button">Ln 0, Col 0</button>
-        <button id="tab-size-count-button">Spaces: 2</button>
-        <button id="encoding-type-button">UTF-8</button>
-        <button id="eol-type-button">LF</button>
-        <button id="file-type-button">Python</button>
-        <button id="noti-button"><i class="fa-solid fa-bell"></i></button>
+      <div id="workspace">
+        <div id="panel-group0">
+          <div id="activity-bar">
+
+          </div>
+          <div id="panel-group1">
+            <div id="panel-group2">
+              <div id="left-panel-placeholder">
+                Left panel placeholder
+              </div>
+              <div id="center-panel-placeholder">
+                Center panel placeholder
+              </div>
+              <div id="right-panel-placeholder">
+                Right panel placeholder
+              </div>
+            </div>
+            <div id="full-panel-placeholder">
+              Placeholder for full-size panel
+            </div>
+          </div>
+        </div>
+        <div id="status-bar" class="blue-bg white-fg">
+          <div class="left-div">
+            <button id="err-warn-button"><i class="fa-solid fa-circle-xmark"></i> 0 <i class="fa-solid fa-circle-exclamation"></i> 0</button>
+            <button id="run-button"><i class="fa-solid fa-play"></i></button>
+          </div>
+          <div class="left-div">
+            <button id="ln-col-count-button">Ln 0, Col 0</button>
+            <button id="tab-size-count-button">Spaces: 2</button>
+            <button id="encoding-type-button">UTF-8</button>
+            <button id="eol-type-button">LF</button>
+            <button id="file-type-button">Python</button>
+            <button id="noti-button"><i class="fa-solid fa-bell"></i></button>
+          </div>
+        </div>
       </div>
     </div>
     <script src="../dist/renderer.js"></script>

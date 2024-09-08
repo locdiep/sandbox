@@ -43,11 +43,11 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   ipcRenderer.on('blur', () => {
-    document.getElementById('title-bar')!.style.backgroundColor = '#1f1f1f'
+    document.getElementById('title-bar')!.style.backgroundColor = '#1f1f1f';
   });
 
   ipcRenderer.on('focus', () => {
-    document.getElementById('title-bar')!.style.backgroundColor = '#1f1f1f'
+    document.getElementById('title-bar')!.style.backgroundColor = '#181818';
   });
 
   document.getElementById('custom-layout-button')!.addEventListener('click', (event) => {
