@@ -130,10 +130,12 @@ window.addEventListener('DOMContentLoaded', () => {
         if (value) {
             window.electronStore.set('workspace.statusBar.visible', true);
             window.electronMenu.setChecked('status-bar-item', true);
+            document.getElementById('status-bar').style.display = 'flex';
         }
         else {
             window.electronStore.set('workspace.statusBar.visible', false);
             window.electronMenu.setChecked('status-bar-item', false);
+            document.getElementById('status-bar').style.display = 'none';
         }
     }
     async function updateActivityBarUI() {
@@ -191,10 +193,12 @@ window.addEventListener('DOMContentLoaded', () => {
         if (value) {
             window.electronStore.set('workspace.statusBar.visible', false);
             window.electronMenu.setChecked('status-bar-item', false);
+            document.getElementById('status-bar').style.display = 'none';
         }
         else {
             window.electronStore.set('workspace.statusBar.visible', true);
             window.electronMenu.setChecked('status-bar-item', true);
+            document.getElementById('status-bar').style.display = 'flex';
         }
     }
 });
