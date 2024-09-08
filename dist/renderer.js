@@ -51,75 +51,150 @@ window.addEventListener('DOMContentLoaded', () => {
         const buttonRect = event.currentTarget.getBoundingClientRect();
         ipcRenderer.send('show-custom-layout-menu', { x: buttonRect.left, y: buttonRect.bottom });
     });
-    updateActivityBarUI();
-    updatePrimarySideBarUI();
-    updateSecondarySideBarUI();
-    updatePanelUI();
-    updateStatusBarUI();
+    ipcRenderer.on('global-shortcut', (event, shortcut) => {
+        switch (shortcut) {
+            case 'ctrl+B':
+                updatePrimarySideBarUI();
+                break;
+            case 'ctrl+shift+B':
+                updateSecondarySideBarUI();
+                break;
+            case 'ctrl+J':
+                updatePanelUI();
+                break;
+            default:
+        }
+    });
+    initActivityBarUI();
+    initPrimarySideBarUI();
+    initSecondarySideBarUI();
+    initPanelUI();
+    initStatusBarUI();
     ipcRenderer.on('toggle-activity-bar', updateActivityBarUI);
     ipcRenderer.on('toggle-primary-side-bar', updatePrimarySideBarUI);
     ipcRenderer.on('toggle-secondary-side-bar', updateSecondarySideBarUI);
     ipcRenderer.on('toggle-panel', updatePanelUI);
     ipcRenderer.on('toggle-status-bar', updateStatusBarUI);
+    async function initActivityBarUI() {
+        const value = await window.electronStore.get('workspace.activityBar.visible');
+        if (value) {
+            window.electronStore.set('workspace.activityBar.visible', true);
+            window.electronMenu.setChecked('activity-bar-item', true);
+        }
+        else {
+            window.electronStore.set('workspace.activityBar.visible', false);
+            window.electronMenu.setChecked('activity-bar-item', false);
+        }
+    }
+    async function initPrimarySideBarUI() {
+        const value = await window.electronStore.get('workspace.primarySideBar.visible');
+        if (value) {
+            window.electronStore.set('workspace.primarySideBar.visible', true);
+            document.querySelector('#toggle-left-side-bar-button i').style.color = 'white';
+            window.electronMenu.setChecked('primary-side-bar-item', true);
+        }
+        else {
+            window.electronStore.set('workspace.primarySideBar.visible', false);
+            document.querySelector('#toggle-left-side-bar-button i').style.color = '#939494';
+            window.electronMenu.setChecked('primary-side-bar-item', false);
+        }
+    }
+    async function initSecondarySideBarUI() {
+        const value = await window.electronStore.get('workspace.secondarySideBar.visible');
+        if (value) {
+            window.electronStore.set('workspace.secondarySideBar.visible', true);
+            document.querySelector('#toggle-right-side-bar-button i').style.color = 'white';
+            window.electronMenu.setChecked('secondary-side-bar-item', true);
+        }
+        else {
+            window.electronStore.set('workspace.secondarySideBar.visible', false);
+            document.querySelector('#toggle-right-side-bar-button i').style.color = '#939494';
+            window.electronMenu.setChecked('secondary-side-bar-item', false);
+        }
+    }
+    async function initPanelUI() {
+        const value = await window.electronStore.get('workspace.panel.visible');
+        if (value) {
+            window.electronStore.set('workspace.panel.visible', true);
+            document.querySelector('#toggle-panel-button i').style.color = 'white';
+            window.electronMenu.setChecked('panel-item', true);
+        }
+        else {
+            window.electronStore.set('workspace.panel.visible', false);
+            document.querySelector('#toggle-panel-button i').style.color = '#939494';
+            window.electronMenu.setChecked('panel-item', false);
+        }
+    }
+    async function initStatusBarUI() {
+        const value = await window.electronStore.get('workspace.statusBar.visible');
+        if (value) {
+            window.electronStore.set('workspace.statusBar.visible', true);
+            window.electronMenu.setChecked('status-bar-item', true);
+        }
+        else {
+            window.electronStore.set('workspace.statusBar.visible', false);
+            window.electronMenu.setChecked('status-bar-item', false);
+        }
+    }
+    async function updateActivityBarUI() {
+        const value = await window.electronStore.get('workspace.activityBar.visible');
+        if (value) {
+            window.electronStore.set('workspace.activityBar.visible', false);
+            window.electronMenu.setChecked('activity-bar-item', false);
+        }
+        else {
+            window.electronStore.set('workspace.activityBar.visible', true);
+            window.electronMenu.setChecked('activity-bar-item', true);
+        }
+    }
+    async function updatePrimarySideBarUI() {
+        const value = await window.electronStore.get('workspace.primarySideBar.visible');
+        if (value) {
+            window.electronStore.set('workspace.primarySideBar.visible', false);
+            document.querySelector('#toggle-left-side-bar-button i').style.color = '#939494';
+            window.electronMenu.setChecked('primary-side-bar-item', false);
+        }
+        else {
+            window.electronStore.set('workspace.primarySideBar.visible', true);
+            document.querySelector('#toggle-left-side-bar-button i').style.color = 'white';
+            window.electronMenu.setChecked('primary-side-bar-item', true);
+        }
+    }
+    async function updateSecondarySideBarUI() {
+        const value = await window.electronStore.get('workspace.secondarySideBar.visible');
+        if (value) {
+            window.electronStore.set('workspace.secondarySideBar.visible', false);
+            document.querySelector('#toggle-right-side-bar-button i').style.color = '#939494';
+            window.electronMenu.setChecked('secondary-side-bar-item', false);
+        }
+        else {
+            window.electronStore.set('workspace.secondarySideBar.visible', true);
+            document.querySelector('#toggle-right-side-bar-button i').style.color = 'white';
+            window.electronMenu.setChecked('secondary-side-bar-item', true);
+        }
+    }
+    async function updatePanelUI() {
+        const value = await window.electronStore.get('workspace.panel.visible');
+        if (value) {
+            window.electronStore.set('workspace.panel.visible', false);
+            document.querySelector('#toggle-panel-button i').style.color = '#939494';
+            window.electronMenu.setChecked('panel-item', false);
+        }
+        else {
+            window.electronStore.set('workspace.panel.visible', true);
+            document.querySelector('#toggle-panel-button i').style.color = 'white';
+            window.electronMenu.setChecked('panel-item', true);
+        }
+    }
+    async function updateStatusBarUI() {
+        const value = await window.electronStore.get('workspace.statusBar.visible');
+        if (value) {
+            window.electronStore.set('workspace.statusBar.visible', false);
+            window.electronMenu.setChecked('status-bar-item', false);
+        }
+        else {
+            window.electronStore.set('workspace.statusBar.visible', true);
+            window.electronMenu.setChecked('status-bar-item', true);
+        }
+    }
 });
-async function updateActivityBarUI() {
-    const value = await window.electronStore.get('workspace.activityBar.visible');
-    if (value) {
-        window.electronStore.set('workspace.activityBar.visible', false);
-        window.electronMenu.setChecked('activity-bar-item', false);
-    }
-    else {
-        window.electronStore.set('workspace.activityBar.visible', true);
-        window.electronMenu.setChecked('activity-bar-item', true);
-    }
-}
-async function updatePrimarySideBarUI() {
-    const value = await window.electronStore.get('workspace.primarySideBar.visible');
-    if (value) {
-        window.electronStore.set('workspace.primarySideBar.visible', false);
-        document.querySelector('#toggle-left-side-bar-button i').style.color = '#939494';
-        window.electronMenu.setChecked('primary-side-bar-item', false);
-    }
-    else {
-        window.electronStore.set('workspace.primarySideBar.visible', true);
-        document.querySelector('#toggle-left-side-bar-button i').style.color = 'white';
-        window.electronMenu.setChecked('primary-side-bar-item', true);
-    }
-}
-async function updateSecondarySideBarUI() {
-    const value = await window.electronStore.get('workspace.secondarySideBar.visible');
-    if (value) {
-        window.electronStore.set('workspace.secondarySideBar.visible', false);
-        document.querySelector('#toggle-right-side-bar-button i').style.color = '#939494';
-        window.electronMenu.setChecked('secondary-side-bar-item', false);
-    }
-    else {
-        window.electronStore.set('workspace.secondarySideBar.visible', true);
-        document.querySelector('#toggle-right-side-bar-button i').style.color = 'white';
-        window.electronMenu.setChecked('secondary-side-bar-item', true);
-    }
-}
-async function updatePanelUI() {
-    const value = await window.electronStore.get('workspace.panel.visible');
-    if (value) {
-        window.electronStore.set('workspace.panel.visible', false);
-        document.querySelector('#toggle-panel-button i').style.color = '#939494';
-        window.electronMenu.setChecked('panel-item', false);
-    }
-    else {
-        window.electronStore.set('workspace.panel.visible', true);
-        document.querySelector('#toggle-panel-button i').style.color = 'white';
-        window.electronMenu.setChecked('panel-item', true);
-    }
-}
-async function updateStatusBarUI() {
-    const value = await window.electronStore.get('workspace.statusBar.visible');
-    if (value) {
-        window.electronStore.set('workspace.statusBar.visible', false);
-        window.electronMenu.setChecked('status-bar-item', false);
-    }
-    else {
-        window.electronStore.set('workspace.statusBar.visible', true);
-        window.electronMenu.setChecked('status-bar-item', true);
-    }
-}

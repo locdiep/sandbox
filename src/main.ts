@@ -1,4 +1,4 @@
-import { app, ipcMain, Menu, BrowserWindow, nativeImage } from 'electron';
+import { app, ipcMain, Menu, BrowserWindow, globalShortcut } from 'electron';
 import path from 'path';
 import ElectronStore from 'electron-store';
 
@@ -48,14 +48,14 @@ function createWindow() {
   win = new BrowserWindow({
     frame: false,
     center: defaultSettings['window.isCenter'],
-    x: defaultSettings['window.x'],
-    y: defaultSettings['window.y'],
+    x: store.get('window.x', defaultSettings['window.x']),
+    y: store.get('window.y', defaultSettings['window.y']),
     titleBarStyle: isMac ? 'hidden' : 'default',
     trafficLightPosition: isMac ? { x: 10, y: 10 } : { x: 0, y: 0 },
-    width: defaultSettings['window.width'],
-    height: defaultSettings['window.height'],
-    minWidth: defaultSettings['window.minWidth'],
-    minHeight: defaultSettings['window.minHeight'],
+    width: store.get('window.width', defaultSettings['window.width']),
+    height: store.get('window.height', defaultSettings['window.height']),
+    minWidth: store.get('window.minWidth', defaultSettings['window.minWidth']),
+    minHeight: store.get('window.minHeight', defaultSettings['window.minHeight']),
     webPreferences: {
       preload: path.join(app.getAppPath(), 'dist', 'preload.js'),
       contextIsolation: true,
@@ -63,7 +63,7 @@ function createWindow() {
     }
   });
 
-  if (defaultSettings['window.isMaximize']) {
+  if (store.get('window.isMaximize', defaultSettings['window.isMaximize'])) {
     win.maximize();
   }
 
@@ -98,10 +98,28 @@ app.whenReady().then(() => {
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   });
+
+  globalShortcut.register('ctrl+B', () => {
+    win.webContents.send('global-shortcut', 'shortcut', 'ctrl+B');
+  });
+  globalShortcut.register('ctrl+shift+B', () => {
+    win.webContents.send('global-shortcut', 'shortcut', 'ctrl+shift+B');
+  });
+  globalShortcut.register('ctrl+J', () => {
+    win.webContents.send('global-shortcut', 'shortcut', 'ctrl+J');
+  });
+  // TODO: F11 doesn't work
+  globalShortcut.register('F11', () => {
+    win.setFullScreen(!win.isFullScreen());
+  });
 });
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit()
+});
+
+app.on('will-quit', () => {
+  globalShortcut.unregisterAll();
 });
 
 ipcMain.on('quit-app', () => {
