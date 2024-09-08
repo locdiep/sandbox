@@ -1,6 +1,7 @@
 import { app, ipcMain, Menu, BrowserWindow, globalShortcut } from 'electron';
 import path from 'path';
-import ElectronStore from 'electron-store';
+import Store from 'electron-store';
+import { send } from 'process';
 
 let win: BrowserWindow;
 const isMac = process.platform === 'darwin';
@@ -23,13 +24,14 @@ type DefaultSettings = {
   'workspace.panel.alignment': 'left' | 'center' | 'right' | 'full',
   'workspace.statusBar.visible': boolean,
   'workspace.primarySideBarPosition': 'left' | 'right',
+  'workspace.panelAlignment': 'left' | 'center' | 'right' | 'full',
   'shortcut.togglePrimarySideBar': string,
   'shortcut.toggleSecondarySideBar': string,
   'shortcut.togglePanel': string,
   'shortcut.fullscreen': string,
 };
 
-const store = new ElectronStore<DefaultSettings>({accessPropertiesByDotNotation: false});
+const store = new Store<DefaultSettings>({accessPropertiesByDotNotation: false});
 
 const defaultSettings: DefaultSettings = {
   'window.isMaximize': false,
@@ -47,6 +49,7 @@ const defaultSettings: DefaultSettings = {
   'workspace.panel.alignment': 'right',
   'workspace.statusBar.visible': true,
   'workspace.primarySideBarPosition': 'left',
+  'workspace.panelAlignment': 'right',
   'shortcut.togglePrimarySideBar': 'CmdOrCtrl+B',
   'shortcut.toggleSecondarySideBar': 'Alt+CmdOrCtrl+B',
   'shortcut.togglePanel': 'CommandOrControl+J',
@@ -172,7 +175,7 @@ ipcMain.handle('setStoreValue', (event, key, value) => {
   setSetting(key, value);
 });
 
-const contextMenu = Menu.buildFromTemplate([
+const customizeLayoutMenu = Menu.buildFromTemplate([
   { label: 'Activity Bar', id: 'activity-bar-item', type: 'checkbox',
     click: () => {win.webContents.send('toggle-activity-bar')}
   },
@@ -193,27 +196,68 @@ const contextMenu = Menu.buildFromTemplate([
   },
   { type: 'separator' },
   { label: 'Primary Side Bar Position', enabled: false },
-  { label: 'Left', type: 'radio', checked: true},
-  { label: 'Right', type: 'radio', checked: false},
+  { label: 'Left', type: 'radio',
+    click: () => {win.webContents.send('set-left-side-bar-primary')}
+  },
+  { label: 'Right', type: 'radio',
+    click: () => {win.webContents.send('set-right-side-bar-primary')}
+  },
   { type: 'separator' },
   { label: 'Panel Alignment', enabled: false },
-  { label: 'Left', type: 'radio', checked: false},
-  { label: 'Center', type: 'radio', checked: false},
-  { label: 'Right', type: 'radio', checked: true},
-  { label: 'Full', type: 'radio', checked: false},
+  { label: 'Left', id: 'left-panel-item', type: 'radio',
+    click: () => {win.webContents.send('set-left-panel')}
+  },
+  { label: 'Center', id: 'center-panel-item', type: 'radio',
+    click: () => {win.webContents.send('set-center-panel')}
+
+  },
+  { label: 'Right', id: 'right-panel-item', type: 'radio',
+    click: () => {win.webContents.send('set-right-panel')}
+
+  },
+  { label: 'Full', id: 'full-panel-item', type: 'radio',
+    click: () => {win.webContents.send('set-full-panel')}
+
+  },
   { type: 'separator' },
   { label: 'Full Screen', type: 'checkbox', checked: false, accelerator: getSetting('shortcut.fullscreen'),},
 ]);
 
+const statusBarMenu = Menu.buildFromTemplate([
+  { label: 'Hide Status Bar', id: 'hide-status-bar-item',
+    click: () => {win.webContents.send('toggle-status-bar')}
+  },
+  { type: 'separator' },
+  { label: 'Problems', id: 'toggle-problems', type: 'checkbox',
+  },
+  { label: 'Editor Statistic', id: 'toggle-ln-col-count', type: 'checkbox',
+  },
+  { label: 'Editor Indentation', id: 'toggle-indentation-count', type: 'checkbox',
+  },
+  { label: 'Editor Encoding', id: 'toggle-ln-encoding-type', type: 'checkbox',
+  },
+  { label: 'Editor File Type', id: 'toggle-ln-file-type', type: 'checkbox',
+  },
+  { label: 'Editor End of Line', id: 'toggle-eol-type', type: 'checkbox',
+  },
+  { label: 'Editor Language', id: 'toggle-lang', type: 'checkbox',
+  },
+  { label: 'Notifications', id: 'toggle-noti', type: 'checkbox',
+  },
+]);
+
 ipcMain.on('set-checked', (event, id, checked) => {
-  const menuItem = contextMenu.getMenuItemById(id);
-  if (menuItem) {
-      menuItem.checked = checked;
-  }
+  const menuItem = customizeLayoutMenu.getMenuItemById(id);
+  menuItem!.checked = checked;
 });
 
 ipcMain.on('show-custom-layout-menu', (event, position) => {
   const senderWin = BrowserWindow.fromWebContents(event.sender) ?? undefined;
   const offset = isMac ? 5 : 0;
-  contextMenu.popup({window: senderWin, x: position.x, y: position.y + offset});
+  customizeLayoutMenu.popup({window: senderWin, x: Math.ceil(position.x), y: Math.ceil(position.y) + offset});
+});
+
+ipcMain.on('show-status-bar-menu', (event) => {
+  const senderWin = BrowserWindow.fromWebContents(event.sender) ?? undefined;
+  statusBarMenu.popup({window: senderWin});
 });

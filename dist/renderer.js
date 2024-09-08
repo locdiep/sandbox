@@ -44,12 +44,16 @@ window.addEventListener('DOMContentLoaded', () => {
         document.getElementById('title-bar').style.backgroundColor = '#1f1f1f';
     });
     ipcRenderer.on('focus', () => {
-        document.getElementById('title-bar').style.backgroundColor = '#1f1f1f';
+        document.getElementById('title-bar').style.backgroundColor = '#181818';
     });
     document.getElementById('custom-layout-button').addEventListener('click', (event) => {
         event.preventDefault();
         const buttonRect = event.currentTarget.getBoundingClientRect();
         ipcRenderer.send('show-custom-layout-menu', { x: buttonRect.left, y: buttonRect.bottom });
+    });
+    document.getElementById('status-bar').addEventListener('contextmenu', (event) => {
+        event.preventDefault();
+        ipcRenderer.send('show-status-bar-menu');
     });
     ipcRenderer.on('global-shortcut', (event, shortcut) => {
         switch (shortcut) {
@@ -70,11 +74,22 @@ window.addEventListener('DOMContentLoaded', () => {
     initSecondarySideBarUI();
     initPanelUI();
     initStatusBarUI();
+    initSideBar();
+    initPanelAlignment();
     ipcRenderer.on('toggle-activity-bar', updateActivityBarUI);
     ipcRenderer.on('toggle-primary-side-bar', updatePrimarySideBarUI);
     ipcRenderer.on('toggle-secondary-side-bar', updateSecondarySideBarUI);
     ipcRenderer.on('toggle-panel', updatePanelUI);
     ipcRenderer.on('toggle-status-bar', updateStatusBarUI);
+    ipcRenderer.on('set-left-side-bar-primary', setLeftSideBarPrimary);
+    ipcRenderer.on('set-right-side-bar-primary', setRightSideBarPrimary);
+    ipcRenderer.on('set-left-panel', setLeftPanelAlignment);
+    ipcRenderer.on('set-center-panel', setCenterPanelAlignment);
+    ipcRenderer.on('set-right-panel', setRightPanelAlignment);
+    ipcRenderer.on('set-full-panel', setFullPanelAlignment);
+    async function initSideBar() {
+        //TODO
+    }
     async function initActivityBarUI() {
         const value = await window.electronStore.get('workspace.activityBar.visible');
         if (value) {
@@ -136,6 +151,36 @@ window.addEventListener('DOMContentLoaded', () => {
             window.electronStore.set('workspace.statusBar.visible', false);
             window.electronMenu.setChecked('status-bar-item', false);
             document.getElementById('status-bar').style.display = 'none';
+        }
+    }
+    function selectPanelAlignment(selectedAlignment, allAlignments) {
+        document.getElementById(selectedAlignment).style.display = 'flex';
+        allAlignments.forEach(alignment => {
+            if (alignment !== selectedAlignment) {
+                document.getElementById(alignment).style.display = 'none';
+            }
+        });
+    }
+    async function initPanelAlignment() {
+        const value = await window.electronStore.get('workspace.panelAlignment');
+        switch (value) {
+            case 'left': {
+                selectPanelAlignment('left-panel-placeholder', ['left-panel-placeholder', 'center-panel-placeholder', 'right-panel-placeholder', 'full-panel-placeholder']);
+                break;
+            }
+            case 'center': {
+                selectPanelAlignment('center-panel-placeholder', ['left-panel-placeholder', 'center-panel-placeholder', 'right-panel-placeholder', 'full-panel-placeholder']);
+                break;
+            }
+            case 'right': {
+                selectPanelAlignment('right-panel-placeholder', ['left-panel-placeholder', 'center-panel-placeholder', 'right-panel-placeholder', 'full-panel-placeholder']);
+                break;
+            }
+            case 'full': {
+                selectPanelAlignment('full-panel-placeholder', ['left-panel-placeholder', 'center-panel-placeholder', 'right-panel-placeholder', 'full-panel-placeholder']);
+                break;
+            }
+            default: break;
         }
     }
     async function updateActivityBarUI() {
@@ -200,5 +245,27 @@ window.addEventListener('DOMContentLoaded', () => {
             window.electronMenu.setChecked('status-bar-item', true);
             document.getElementById('status-bar').style.display = 'flex';
         }
+    }
+    function setLeftPanelAlignment() {
+        window.electronStore.set('workspace.panelAlignment', 'left');
+        selectPanelAlignment('left-panel-placeholder', ['left-panel-placeholder', 'center-panel-placeholder', 'right-panel-placeholder', 'full-panel-placeholder']);
+    }
+    function setCenterPanelAlignment() {
+        window.electronStore.set('workspace.panelAlignment', 'center');
+        selectPanelAlignment('center-panel-placeholder', ['left-panel-placeholder', 'center-panel-placeholder', 'right-panel-placeholder', 'full-panel-placeholder']);
+    }
+    function setRightPanelAlignment() {
+        window.electronStore.set('workspace.panelAlignment', 'right');
+        selectPanelAlignment('right-panel-placeholder', ['left-panel-placeholder', 'center-panel-placeholder', 'right-panel-placeholder', 'full-panel-placeholder']);
+    }
+    function setFullPanelAlignment() {
+        window.electronStore.set('workspace.panelAlignment', 'full');
+        selectPanelAlignment('full-panel-placeholder', ['left-panel-placeholder', 'center-panel-placeholder', 'right-panel-placeholder', 'full-panel-placeholder']);
+    }
+    function setLeftSideBarPrimary() {
+        // TODO
+    }
+    function setRightSideBarPrimary() {
+        // TODO
     }
 });

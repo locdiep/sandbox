@@ -14,7 +14,10 @@ button {
   border: none;
   outline: none;
   background-color: transparent;
-  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 20px;
 }
 
 button:hover {
@@ -28,6 +31,16 @@ button:hover i {
 .square {
   width: 24px;
   height: 24px;
+}
+
+.square-lg {
+  width: 32px;
+  height: 32px;
+}
+
+.square-xl {
+  width: 48px;
+  height: 48px;
 }
 
 i {
@@ -74,12 +87,15 @@ input {
   text-align: center;
   border: none;
   outline: 1px solid #4b4b4b;
-  border-radius: 4px;
   background-color: #313131;
   width: 40vw;
   max-width: 500px;
   color: #939494;
   font-size: 0.8rem;
+}
+
+.round-border {
+  border-radius: 4px;
 }
 
 .input-lg {
@@ -89,7 +105,6 @@ input {
 .window-button {
   width: 45px;
   height: 34px;
-  border-radius: 0;
 }
 
 #close-button:hover {
@@ -200,4 +215,18 @@ input {
   border: 1px solid #2b2b2b;
   flex: 0 0 48px;
   height: 100%;
+}
+
+#activity-bar-top {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+#activity-bar-bottom {
+  margin-top: auto;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
 }
