@@ -1,21 +1,32 @@
 import { app, ipcMain, Menu, BrowserWindow, nativeImage } from 'electron';
 import path from 'path';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import Store from 'electron-store';
-const store = new Store({accessPropertiesByDotNotation: false});
+import ElectronStore from 'electron-store';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-let win;
+let win: BrowserWindow;
 const isMac = process.platform === 'darwin';
 const isWin = process.platform === 'win32';
 
-const settingPath = path.join(app.getPath('userData'), 'config.json');
-console.log(`settingPath: ${settingPath}`)
-let defaultSettings = {
+type DefaultSettings = {
+  'window.isMaximize': boolean,
+  'window.isCenter': boolean,
+  'window.x': number,
+  'window.y': number,
+  'window.width': number,
+  'window.height': number,
+  'window.minWidth': number,
+  'window.minHeight': number,
+  'workspace.activityBar.visible': boolean,
+  'workspace.primarySideBar.visible': boolean,
+  'workspace.secondarySideBar.visible': boolean,
+  'workspace.panel.visible': boolean,
+  'workspace.panel.alignment': 'left' | 'center' | 'right' | 'full',
+  'workspace.statusBar.visible': boolean,
+  'workspace.primarySideBarPosition': 'left' | 'right',
+};
+
+const store = new ElectronStore<DefaultSettings>({accessPropertiesByDotNotation: false});
+
+const defaultSettings: DefaultSettings = {
   'window.isMaximize': false,
   'window.isCenter': true,
   'window.x': 0,
@@ -28,23 +39,12 @@ let defaultSettings = {
   'workspace.primarySideBar.visible': true,
   'workspace.secondarySideBar.visible': false,
   'workspace.panel.visible': true,
-  // left, center, right (default), full
   'workspace.panel.alignment': 'right',
   'workspace.statusBar.visible': true,
-  // left (default), right
   'workspace.primarySideBarPosition': 'left',
 }
 
-if (fs.existsSync(settingPath)) {
-  const jsonData = fs.readFileSync(settingPath, 'utf8');
-  const data = JSON.parse(jsonData);
-  console.log(data);
-  Object.entries(data).forEach(([key, value]) => {
-    defaultSettings[key] = value;
-  });
-}
-
-const createWindow = () => {
+function createWindow() {
   win = new BrowserWindow({
     frame: false,
     center: defaultSettings['window.isCenter'],
@@ -57,7 +57,7 @@ const createWindow = () => {
     minWidth: defaultSettings['window.minWidth'],
     minHeight: defaultSettings['window.minHeight'],
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      preload: path.join(app.getAppPath(), 'dist', 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false
     }
@@ -67,7 +67,7 @@ const createWindow = () => {
     win.maximize();
   }
 
-  win.loadFile('index.html');
+  win.loadFile(path.join(app.getAppPath(), 'src', 'index.html'));
 
   if (isWin) {
     win.on('maximize', () => {
@@ -90,7 +90,7 @@ const createWindow = () => {
     store.set('window.width', bound.width);
     store.set('window.height', bound.height);
   });
-};
+}
 
 app.whenReady().then(() => {
   createWindow();
@@ -131,7 +131,7 @@ if (isWin) {
 }
 
 ipcMain.handle('getStoreValue', (event, key) => {
-  return store.get(key, defaultSettings[key]);
+  return store.get(key, defaultSettings[key as keyof typeof defaultSettings]);
 });
 
 ipcMain.handle('setStoreValue', (event, key, value) => {
@@ -176,12 +176,7 @@ ipcMain.on('set-checked', (event, id, checked) => {
 });
 
 ipcMain.on('show-custom-layout-menu', (event, position) => {
-  const senderWin = BrowserWindow.fromWebContents(event.sender);
+  const senderWin = BrowserWindow.fromWebContents(event.sender) ?? undefined;
   const offset = isMac ? 5 : 0;
   contextMenu.popup({window: senderWin, x: position.x, y: position.y + offset});
-});
-
-ipcMain.handle('write-settings', (event, settings) => {
-  const filePath = path.join(app.getPath('userData'), 'settings.json');
-  fs.writeFileSync(filePath, JSON.stringify(settings, null, 2));
 });
